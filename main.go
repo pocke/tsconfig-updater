@@ -4,24 +4,21 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"github.com/ogier/pflag"
 )
 
 func main() {
 	path := ""
-	glob := ""
 	pflag.StringVarP(&path, "tsconfig", "t", "tsconfig.json", "your tsconfig.json path")
-	pflag.StringVarP(&glob, "glob", "g", "src/**/*.ts", "glob pattern")
 	pflag.Parse()
 
-	if err := Update(path, glob); err != nil {
+	if err := Update(path, pflag.Args()); err != nil {
 		panic(err)
 	}
 }
 
-func Update(tsconfigPath string, glob string) error {
+func Update(tsconfigPath string, files []string) error {
 	f, err := os.Open(tsconfigPath)
 	if err != nil {
 		return err
@@ -34,11 +31,7 @@ func Update(tsconfigPath string, glob string) error {
 	}
 	f.Close()
 
-	ma, err := filepath.Glob(glob)
-	if err != nil {
-		return err
-	}
-	v["files"] = ma
+	v["files"] = files
 
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
