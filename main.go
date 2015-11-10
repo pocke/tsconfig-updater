@@ -31,6 +31,9 @@ func Update(tsconfigPath string, files []string) error {
 	}
 	f.Close()
 
+	if files == nil {
+		files = []string{}
+	}
 	v["files"] = files
 
 	b, err := json.MarshalIndent(v, "", "  ")
