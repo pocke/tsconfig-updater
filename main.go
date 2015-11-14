@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/ogier/pflag"
+	"github.com/pocke/orderedmap.go"
 )
 
 func main() {
@@ -25,8 +26,8 @@ func Update(tsconfigPath string, files []string) error {
 	}
 	defer f.Close()
 
-	v := make(map[string]interface{})
-	if err := json.NewDecoder(f).Decode(&v); err != nil {
+	v := omap.New()
+	if err := json.NewDecoder(f).Decode(v); err != nil {
 		return err
 	}
 	f.Close()
@@ -34,7 +35,7 @@ func Update(tsconfigPath string, files []string) error {
 	if files == nil {
 		files = []string{}
 	}
-	v["files"] = files
+	v.Set("files", files)
 
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
